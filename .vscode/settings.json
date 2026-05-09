@@ -1,0 +1,42 @@
+{
+  "// _comment": "Editor settings that support GitHub Copilot's context discipline. See instructions/context/copilot.md.",
+
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
+  "github.copilot.chat.codeGeneration.instructions": [
+    { "file": ".github/copilot-instructions.md" }
+  ],
+
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    { "file": "instructions/commit-conventions.md" }
+  ],
+
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    { "file": "instructions/pr-conventions.md" }
+  ],
+
+  "// content_exclusion_comment": "Exclude noisy build artefacts and lockfiles from Copilot's context to keep prompts lean.",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/.next": true,
+    "**/.turbo": true,
+    "**/.cache": true,
+    "**/*.lock": true,
+    "**/package-lock.json": true,
+    "**/pnpm-lock.yaml": true,
+    "**/yarn.lock": true,
+    "**/bun.lockb": true
+  },
+
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true,
+    "**/.next/**": true,
+    "**/.turbo/**": true
+  }
+}

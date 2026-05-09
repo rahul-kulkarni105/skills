@@ -1,0 +1,26 @@
+---
+description: Always-on entry rule for Cursor. Points at AGENTS.md and Cursor-specific tactics.
+globs:
+alwaysApply: true
+---
+
+# Cursor entry rule
+
+> **Precedence.** Consumer project config wins. Treat everything
+> referenced below as a default.
+
+Read [AGENTS.md](../../AGENTS.md) for universal rules: interaction
+style, adversarial default, tone, commits, PRs, secrets, quality bar,
+and **token & context discipline**.
+
+Read [instructions/context/cursor.md](../../instructions/context/cursor.md)
+for Cursor-specific tactics: MDC frontmatter discipline, rule scoping
+by glob, `@Codebase` use, project rules vs user rules.
+
+## Quick rules
+
+- Use the chat's option UI for clarifying questions; never plain prose.
+- Default sceptical: grill plans before agreeing.
+- Search before read; batch independent tool calls; don't re-read after
+  edit; summarise large outputs.
+- Conventional Commits; never commit secrets.
