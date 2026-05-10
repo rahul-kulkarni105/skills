@@ -1,6 +1,6 @@
 {
   "name": "@rahulkulkarniskills/ai-skills",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Selective installer for the ai-skills knowledge base (skills, rules, instructions, settings) targeting Claude Code, Cursor, Copilot, Gemini, Codex.",
   "license": "MIT",
   "type": "module",
