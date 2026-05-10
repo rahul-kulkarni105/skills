@@ -4,76 +4,42 @@ description: Tool-agnostic, code-free knowledge base of skills, prompts, and ins
 last_reviewed: 2026-05-10
 ---
 
-# AI Skills & Conventions — multi-tool AI assistant configuration
+# AI Skills & Conventions
 
 [![npm](https://img.shields.io/npm/v/%40rahulkulkarniskills%2Fai-skills)](https://www.npmjs.com/package/@rahulkulkarniskills/ai-skills)
 [![npm downloads](https://img.shields.io/npm/dm/%40rahulkulkarniskills%2Fai-skills)](https://www.npmjs.com/package/@rahulkulkarniskills/ai-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](cli/LICENSE)
 
-A code-free, document-only knowledge base of skills, prompts, and instructions
-for AI coding assistants — **Claude Code**, **GitHub Copilot**, **OpenAI Codex**,
-**Gemini CLI**, **Cursor**, **Windsurf**, and **Ollama**. Built around the
-**AGENTS.md** open standard as a single source of truth, with thin tool-native
-shims, composable instruction blocks, an adversarial skill suite (grill-me,
-convince-me, weak-spots, steelman, pre-mortem), strict token & context
-discipline, and per-tool tactics. Consume it as a lightweight Claude
-skills repo, through the `ai-skills` CLI, or by copying/pinning the repo
-with bootstrap/submodule workflows.
+Reusable AI coding-assistant skills, prompts, and instructions.
 
-**Keywords:** AGENTS.md, agentic AI, AI agents, AI tooling, Claude Code skills,
-Cursor rules, Copilot instructions, Gemini CLI, Codex, Windsurf, Ollama,
-prompt engineering, context engineering, LLM workflows, developer tooling.
+Pick one:
 
-The repo's primary reader is the AI itself; humans are the secondary
-audience. Files are written so a model can consume them mid-task — short
-sections, explicit headings, no clever prose.
+1. **Option 1:** install just the Claude Code skills.
+2. **Option 2:** use the CLI for the broader multi-tool setup.
 
-## What lives here
+## Option 1: Install Claude Skills
 
-- [AGENTS.md](AGENTS.md) — universal entry, read by Codex, Cursor, Gemini
-  CLI, Copilot agent mode, Windsurf.
-- [CLAUDE.md](CLAUDE.md) — Claude Code project memory.
-- [GEMINI.md](GEMINI.md) — Gemini CLI shim that imports `AGENTS.md`.
-- [.github/copilot-instructions.md](.github/copilot-instructions.md) —
-  Copilot's native instructions path (manual mirror of `AGENTS.md` core).
-- [.cursor/rules/000-index.mdc](.cursor/rules/000-index.mdc) — Cursor MDC
-  rule, always applied.
-- [.claude-plugin/plugin.json](.claude-plugin/plugin.json) — public
-  Claude skill installer manifest.
-- [skills/](skills/) — Claude Code Agent Skills (SKILL.md format).
-- [prompts/](prompts/) — tool-agnostic, copy-pasteable prompts.
-- [instructions/](instructions/) — composable, always-on instruction
-  blocks (commits, PRs, secrets, quality bar, interaction style,
-  adversarial default, token & context discipline).
-- [stacks/](stacks/) — domain-grouped guidance (frontend, build, testing,
-  runtime, languages, infra, llm).
-- [docs/](docs/) — architecture, tool matrix, style guide, sync
-  strategies, per-tool wiring guides.
-- [bootstrap/](bootstrap/) — degit-style copy-into-project script.
-
-## Quick start
-
-There are two primary ways to consume this repo.
-
-### Option 1: Install just the Claude skills
-
-Use this if you only want the `SKILL.md` workflows in Claude Code and do
-not need the broader multi-tool installer:
+This is the simplest path. Use it if you only want the `SKILL.md`
+workflows in Claude Code:
 
 ```sh
 npx skills@latest add rahul-kulkarni105/skills
 ```
 
-This reads [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json)
-and installs the published skill directories from [skills/](skills/).
-It is intentionally simple: no repo bootstrap, no Codex/Cursor/Copilot
-shims, no local CLI state.
+The installer reads [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json)
+and installs the published skills from [skills/](skills/).
 
-### Option 2: Use the `ai-skills` CLI
+## Option 2: Use The CLI
 
-Use this if you want the full multi-tool setup: AGENTS.md, Claude Code
-skills, Cursor rules, Copilot instructions, Gemini/Codex shims, selected
-bundles, lockfile verification, and target-specific installs.
+Use this if you want everything in Option 1, plus the extra multi-tool
+setup:
+
+- AGENTS.md, CLAUDE.md, and GEMINI.md entry files.
+- Cursor rules and GitHub Copilot instructions.
+- Codex, Gemini CLI, Windsurf, and Ollama guidance.
+- Selected bundles instead of installing everything.
+- Lockfile verification so installed files can be checked later.
+- Bootstrap/submodule-friendly project setup.
 
 ```sh
 npx @rahulkulkarniskills/ai-skills init --ref <tag-or-commit>
@@ -87,48 +53,20 @@ npm --prefix cli run build
 node cli/bin/ai-skills.js init --manifest ./manifest.json
 ```
 
-The CLI can also verify installed files later:
+Verify installed files:
 
 ```sh
 npx @rahulkulkarniskills/ai-skills verify
 ```
 
-### Other sync strategies
-
-Pick a sync strategy in [docs/sync-strategies.md](docs/sync-strategies.md):
-
-- **Bootstrap (easy mode)** — one-shot snapshot copy via `git archive`. Run
-  [`bootstrap/install.sh`](bootstrap/install.sh) inside a target project.
-- **Submodule (pinned mode)** — `git submodule add` for version-locked
-  team consumption.
-
-Per-tool wiring lives in [docs/](docs/):
-[claude-code](docs/using-with-claude-code.md),
-[copilot](docs/using-with-copilot.md),
-[codex](docs/using-with-codex.md),
-[gemini-cli](docs/using-with-gemini-cli.md),
-[cursor](docs/using-with-cursor.md),
-[windsurf](docs/using-with-windsurf.md),
-[ollama](docs/using-with-ollama.md).
-
-## Debugging `ai-skills`
-
-The CLI keeps normal command output separate from diagnostic logs. Use
-`--verbose` or `AI_SKILLS_LOG=debug` when debugging installer behavior:
+For debugging:
 
 ```sh
 ai-skills --verbose init --manifest ./manifest.json
 AI_SKILLS_LOG=debug ai-skills verify
 ```
 
-Use `--quiet` or `AI_SKILLS_LOG=silent` to suppress diagnostic logs. To
-write diagnostics to a file, set `AI_SKILLS_LOG_FILE=/path/to/log.txt`.
-Logs redact common secrets, credentials, and absolute paths before output.
-
-## Telemetry Preference
-
-The CLI stores anonymous analytics consent in your user config directory,
-never in the project. Manage it with:
+For telemetry preferences:
 
 ```sh
 ai-skills telemetry status
@@ -136,13 +74,50 @@ ai-skills telemetry enable
 ai-skills telemetry disable
 ```
 
-Environment overrides are respected: `AI_SKILLS_TELEMETRY=0`,
-`AI_SKILLS_TELEMETRY=1`, and `DO_NOT_TRACK=1`.
+Telemetry consent is stored in your user config directory, not in the
+project. `DO_NOT_TRACK=1` and `AI_SKILLS_TELEMETRY=0` are respected.
 
-Telemetry events are sent only when consent is enabled and a PostHog public
-project key is configured with `AI_SKILLS_POSTHOG_KEY`. Use
-`AI_SKILLS_TELEMETRY_DEBUG=1` to print the telemetry decision without sending
-events.
+## What Is Included
+
+- [skills/](skills/) — Claude Code skills:
+  `grill-me`, `convince-me`, `weak-spots`, `steelman`, `pre-mortem`.
+- [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md), and [GEMINI.md](GEMINI.md)
+  — shared instructions for different agents.
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) and
+  [.cursor/rules/000-index.mdc](.cursor/rules/000-index.mdc) — native
+  Copilot and Cursor entry points.
+- [instructions/](instructions/), [prompts/](prompts/), and [stacks/](stacks/)
+  — reusable guidance, prompt templates, and stack-specific conventions.
+- [manifest.json](manifest.json) and [cli/](cli/) — the multi-tool installer.
+
+## Root Files
+
+Some files stay at the project root on purpose because tools look for
+them there:
+
+- `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`.
+- `README.md`, `LICENSE`, and `manifest.json`.
+- `.claude-plugin/`, `.claude/`, `.cursor/`, `.github/`, and `.vscode/`.
+- `skills/`, `instructions/`, `prompts/`, and `stacks/`, because the
+  model-facing docs and installer manifests point at those paths.
+
+## Other Ways To Consume
+
+- **Bootstrap:** copy a snapshot into a project with
+  [bootstrap/install.sh](bootstrap/install.sh).
+- **Submodule:** pin this repo in a project and update it deliberately.
+
+See [docs/sync-strategies.md](docs/sync-strategies.md) for the tradeoffs.
+
+## Tool Guides
+
+- [Claude Code](docs/using-with-claude-code.md)
+- [Codex](docs/using-with-codex.md)
+- [Cursor](docs/using-with-cursor.md)
+- [GitHub Copilot](docs/using-with-copilot.md)
+- [Gemini CLI](docs/using-with-gemini-cli.md)
+- [Windsurf](docs/using-with-windsurf.md)
+- [Ollama](docs/using-with-ollama.md)
 
 ## Boundaries
 

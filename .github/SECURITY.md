@@ -2,7 +2,7 @@
 
 This repository is **documentation only**. It contains no executable
 application code, no dependencies, no build artifacts, and ships no
-runtime. The single shell script under [bootstrap/](bootstrap/) is a
+runtime. The single shell script under [bootstrap/](../bootstrap/) is a
 local file-copy helper that runs only when a user explicitly invokes
 it.
 
@@ -21,7 +21,7 @@ issues with the same seriousness as code vulnerabilities.
 - Bootstrap script behaviour that writes outside the target directory,
   follows symlinks unsafely, or executes downloaded content.
 - Supply-chain risks introduced via the sync strategies documented in
-  [docs/sync-strategies.md](docs/sync-strategies.md).
+  [docs/sync-strategies.md](../docs/sync-strategies.md).
 
 Spelling, link rot, or stylistic issues are **not** security issues —
 open a normal PR or issue for those.
@@ -42,7 +42,7 @@ referencing the change is welcome.
 ## Response expectations
 
 This is a personal project maintained opportunistically (see
-[docs/working-with-ai.md](docs/working-with-ai.md)). Expect:
+[docs/working-with-ai.md](../docs/working-with-ai.md)). Expect:
 
 - Acknowledgement within 7 days.
 - Triage and a fix plan within 30 days for valid reports.
@@ -53,8 +53,8 @@ No bug bounty. No formal SLA.
 ## Scope
 
 In scope: every file in this repo, including the bootstrap script and
-documentation under [docs/](docs/), [instructions/](instructions/),
-[skills/](skills/), [prompts/](prompts/), and [stacks/](stacks/).
+documentation under [docs/](../docs/), [instructions/](../instructions/),
+[skills/](../skills/), [prompts/](../prompts/), and [stacks/](../stacks/).
 
 Out of scope: vulnerabilities in third-party tools this repo
 documents (Claude Code, Copilot, Codex, Gemini CLI, Cursor, Windsurf,
