@@ -16,8 +16,24 @@ import { runList } from "./commands/list.js";
 import { runAdd } from "./commands/add.js";
 import { runRemove } from "./commands/remove.js";
 import { runEject } from "./commands/eject.js";
+import {
+  runTelemetryDisable,
+  runTelemetryEnable,
+  runTelemetryStatus,
+} from "./commands/telemetry.js";
 import { CLI_VERSION } from "./version.js";
 import { DEFAULT_REGISTRY } from "./fetch.js";
+import { configureLogger, logDebug } from "./log.js";
+import {
+  captureTelemetry,
+  completeCommand,
+  createTelemetryContext,
+  failCommand,
+  flushTelemetry,
+  startCommand,
+  type TelemetryContext,
+  type TelemetryProperties,
+} from "./telemetry.js";
 
 const program = new Command();
 
@@ -27,7 +43,9 @@ program
     "Selective installer for AI coding-assistant skills, rules, and instructions.\n" +
       "Targets: Claude Code, GitHub Copilot, OpenAI Codex, Gemini CLI, Cursor.",
   )
-  .version(CLI_VERSION, "-V, --version");
+  .version(CLI_VERSION, "-V, --version")
+  .option("-q, --quiet", "Suppress diagnostic logging", false)
+  .option("-v, --verbose", "Enable debug diagnostic logging", false);
 
 // ─── init ─────────────────────────────────────────────────────────────────────
 
@@ -81,8 +99,23 @@ program
     user: boolean;
     yes: boolean;
   }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
     const targets = opts.target.length > 0 ? opts.target : undefined;
+    logCommandStart("init", {
+      source_kind: sourceKind(opts),
+      target_count: opts.target.length,
+      user_mode: opts.user,
+      yes_mode: opts.yes,
+    });
+    const telemetryProps = {
+      source_kind: sourceKind(opts),
+      target_count: opts.target.length,
+      user_mode: opts.user,
+      yes_mode: opts.yes,
+      network_fetch_used: Boolean(opts.ref),
+    };
+    const telemetry = await beginTelemetry("init", telemetryProps);
     try {
       await runInit({
         ...(opts.manifest ? { manifestPath: resolve(opts.manifest) } : {}),
@@ -95,7 +128,10 @@ program
         userMode: opts.user,
         ...(targets ? { targets } : {}),
       });
+      captureTelemetry(telemetry.context, "install_completed", telemetryProps);
+      await finishTelemetry(telemetry, "init", telemetryProps);
     } catch (err) {
+      await failTelemetry(telemetry, "init", err, telemetryProps);
       process.stderr.write(`ai-skills init: ${formatError(err)}\n`);
       process.exit(1);
     }
@@ -114,11 +150,21 @@ program
     "Directory where files were installed (default: current directory)",
   )
   .action(async (opts: { installRoot?: string }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
+    logCommandStart("verify");
+    const telemetry = await beginTelemetry("verify");
     try {
       const result = await runVerify({ installRoot });
+      const telemetryProps = {
+        exit_code: result.exitCode,
+        drift_count: result.files.filter((f) => f.status !== "ok").length,
+      };
+      captureTelemetry(telemetry.context, "verify_completed", telemetryProps);
+      await finishTelemetry(telemetry, "verify", telemetryProps);
       process.exit(result.exitCode);
     } catch (err) {
+      await failTelemetry(telemetry, "verify", err);
       process.stderr.write(`ai-skills verify: ${formatError(err)}\n`);
       process.exit(2);
     }
@@ -136,11 +182,21 @@ program
     "Directory to check (default: current directory)",
   )
   .action(async (opts: { installRoot?: string }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
+    logCommandStart("doctor");
+    const telemetry = await beginTelemetry("doctor");
     try {
       const result = await runDoctor({ installRoot });
+      const telemetryProps = {
+        exit_code: result.status === "fail" ? 1 : 0,
+        cosign_available: result.checks.some((c) => c.name.includes("cosign") && c.status === "ok"),
+      };
+      captureTelemetry(telemetry.context, "doctor_check_completed", telemetryProps);
+      await finishTelemetry(telemetry, "doctor", telemetryProps);
       process.exit(result.status === "fail" ? 1 : 0);
     } catch (err) {
+      await failTelemetry(telemetry, "doctor", err);
       process.stderr.write(`ai-skills doctor: ${formatError(err)}\n`);
       process.exit(1);
     }
@@ -186,9 +242,20 @@ program
     installRoot?: string;
     json: boolean;
   }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
+    logCommandStart("list", {
+      source_kind: sourceKind(opts),
+      json: opts.json,
+    });
+    const telemetryProps = {
+      source_kind: sourceKind(opts),
+      json: opts.json,
+      network_fetch_used: Boolean(opts.ref),
+    };
+    const telemetry = await beginTelemetry("list", telemetryProps);
     try {
-      await runList({
+      const result = await runList({
         installRoot,
         json: opts.json,
         ...(opts.manifest ? { manifestPath: resolve(opts.manifest) } : {}),
@@ -196,7 +263,15 @@ program
         ...(opts.registry ? { registry: opts.registry } : {}),
         registryTrust: opts.registryTrust,
       });
+      const completedProps = {
+        ...telemetryProps,
+        component_count: result.installed.length + result.available.length,
+        drift_count: result.outdated.length,
+      };
+      captureTelemetry(telemetry.context, "list_completed", completedProps);
+      await finishTelemetry(telemetry, "list", completedProps);
     } catch (err) {
+      await failTelemetry(telemetry, "list", err, telemetryProps);
       process.stderr.write(`ai-skills list: ${formatError(err)}\n`);
       process.exit(1);
     }
@@ -253,8 +328,27 @@ program
     yes: boolean;
     force: boolean;
   }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
     const targets = opts.target.length > 0 ? opts.target : undefined;
+    logCommandStart("add", {
+      source_kind: sourceKind(opts),
+      id_count: ids.length,
+      target_count: opts.target.length,
+      user_mode: opts.user,
+      yes_mode: opts.yes,
+      force: opts.force,
+    });
+    const telemetryProps = {
+      source_kind: sourceKind(opts),
+      id_count: ids.length,
+      target_count: opts.target.length,
+      user_mode: opts.user,
+      yes_mode: opts.yes,
+      force: opts.force,
+      network_fetch_used: Boolean(opts.ref),
+    };
+    const telemetry = await beginTelemetry("add", telemetryProps);
     try {
       await runAdd({
         ids,
@@ -269,7 +363,10 @@ program
         registryTrust: opts.registryTrust,
         ...(targets ? { targets } : {}),
       });
+      captureTelemetry(telemetry.context, "add_completed", telemetryProps);
+      await finishTelemetry(telemetry, "add", telemetryProps);
     } catch (err) {
+      await failTelemetry(telemetry, "add", err, telemetryProps);
       process.stderr.write(`ai-skills add: ${formatError(err)}\n`);
       process.exit(1);
     }
@@ -301,9 +398,25 @@ program
     force: boolean;
     cascade: boolean;
   }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
+    logCommandStart("remove", {
+      id_count: ids.length,
+      yes_mode: opts.yes,
+      force: opts.force,
+      cascade: opts.cascade,
+      has_manifest: Boolean(opts.manifest),
+    });
+    const telemetryProps = {
+      id_count: ids.length,
+      yes_mode: opts.yes,
+      force: opts.force,
+      cascade: opts.cascade,
+      has_manifest: Boolean(opts.manifest),
+    };
+    const telemetry = await beginTelemetry("remove", telemetryProps);
     try {
-      await runRemove({
+      const result = await runRemove({
         ids,
         installRoot,
         yes: opts.yes,
@@ -311,7 +424,15 @@ program
         cascade: opts.cascade,
         ...(opts.manifest ? { manifestPath: resolve(opts.manifest) } : {}),
       });
+      const completedProps = {
+        ...telemetryProps,
+        removed_count: result.entries.filter((e) => e.action !== "skipped").length,
+        skipped_count: result.entries.filter((e) => e.action === "skipped").length,
+      };
+      captureTelemetry(telemetry.context, "remove_completed", completedProps);
+      await finishTelemetry(telemetry, "remove", completedProps);
     } catch (err) {
+      await failTelemetry(telemetry, "remove", err, telemetryProps);
       process.stderr.write(`ai-skills remove: ${formatError(err)}\n`);
       process.exit(1);
     }
@@ -331,11 +452,77 @@ program
     "Directory where files were installed (default: current directory)",
   )
   .action(async (opts: { installRoot?: string }) => {
+    applyLoggingOptions();
     const installRoot = resolve(opts.installRoot ?? process.cwd());
+    logCommandStart("eject");
+    const telemetry = await beginTelemetry("eject");
     try {
-      await runEject({ installRoot });
+      const result = await runEject({ installRoot });
+      const telemetryProps = { component_count: result.entries.length };
+      captureTelemetry(telemetry.context, "eject_completed", telemetryProps);
+      await finishTelemetry(telemetry, "eject", telemetryProps);
     } catch (err) {
+      await failTelemetry(telemetry, "eject", err);
       process.stderr.write(`ai-skills eject: ${formatError(err)}\n`);
+      process.exit(1);
+    }
+  });
+
+// ─── telemetry ───────────────────────────────────────────────────────────────
+
+const telemetry = program
+  .command("telemetry")
+  .description("Manage anonymous analytics preference.");
+
+telemetry
+  .command("status")
+  .description("Show the current telemetry preference and effective state.")
+  .action(async () => {
+    applyLoggingOptions();
+    logCommandStart("telemetry status");
+    const telemetry = await beginTelemetry("telemetry status");
+    try {
+      await runTelemetryStatus({ isTTY: Boolean(process.stdout.isTTY) });
+      await finishTelemetry(telemetry, "telemetry status");
+    } catch (err) {
+      await failTelemetry(telemetry, "telemetry status", err);
+      process.stderr.write(`ai-skills telemetry status: ${formatError(err)}\n`);
+      process.exit(1);
+    }
+  });
+
+telemetry
+  .command("enable")
+  .description("Enable anonymous usage analytics for future versions.")
+  .action(async () => {
+    applyLoggingOptions();
+    logCommandStart("telemetry enable");
+    const telemetry = await beginTelemetry("telemetry enable");
+    try {
+      await runTelemetryEnable();
+      captureTelemetry(telemetry.context, "telemetry_consent_changed", { command: "telemetry enable" });
+      await finishTelemetry(telemetry, "telemetry enable");
+    } catch (err) {
+      await failTelemetry(telemetry, "telemetry enable", err);
+      process.stderr.write(`ai-skills telemetry enable: ${formatError(err)}\n`);
+      process.exit(1);
+    }
+  });
+
+telemetry
+  .command("disable")
+  .description("Disable anonymous usage analytics.")
+  .action(async () => {
+    applyLoggingOptions();
+    logCommandStart("telemetry disable");
+    const telemetry = await beginTelemetry("telemetry disable");
+    try {
+      await runTelemetryDisable();
+      captureTelemetry(telemetry.context, "telemetry_consent_changed", { command: "telemetry disable" });
+      await finishTelemetry(telemetry, "telemetry disable");
+    } catch (err) {
+      await failTelemetry(telemetry, "telemetry disable", err);
+      process.stderr.write(`ai-skills telemetry disable: ${formatError(err)}\n`);
       process.exit(1);
     }
   });
@@ -352,4 +539,49 @@ function collect(value: string, previous: string[]): string[] {
 
 function formatError(err: unknown): string {
   return err instanceof Error ? err.message : String(err);
+}
+
+function applyLoggingOptions(): void {
+  const opts = program.opts<{ quiet: boolean; verbose: boolean }>();
+  configureLogger({ quiet: opts.quiet, verbose: opts.verbose });
+}
+
+function logCommandStart(command: string, fields: Record<string, unknown> = {}): void {
+  logDebug("command started", { command, ...fields });
+}
+
+function sourceKind(opts: { manifest?: string; ref?: string }): "local_manifest" | "github_ref" | "none" {
+  if (opts.manifest) return "local_manifest";
+  if (opts.ref) return "github_ref";
+  return "none";
+}
+
+interface ActiveTelemetry {
+  context: TelemetryContext;
+  startedAt: number;
+}
+
+async function beginTelemetry(command: string, properties: TelemetryProperties = {}): Promise<ActiveTelemetry> {
+  const context = await createTelemetryContext({ isTTY: Boolean(process.stdout.isTTY) });
+  const startedAt = startCommand(context, command, properties);
+  return { context, startedAt };
+}
+
+async function finishTelemetry(
+  telemetry: ActiveTelemetry,
+  command: string,
+  properties: TelemetryProperties = {},
+): Promise<void> {
+  completeCommand(telemetry.context, command, telemetry.startedAt, properties);
+  await flushTelemetry(telemetry.context);
+}
+
+async function failTelemetry(
+  telemetry: ActiveTelemetry,
+  command: string,
+  err: unknown,
+  properties: TelemetryProperties = {},
+): Promise<void> {
+  failCommand(telemetry.context, command, telemetry.startedAt, err, properties);
+  await flushTelemetry(telemetry.context);
 }

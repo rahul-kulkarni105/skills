@@ -31,6 +31,19 @@ frontmatter, fill in the body. Keep skill bodies under ~500 lines.
 Promotion: a recurring pattern becomes a skill only after the
 **Rule of 3**.
 
+## Installing just the skills
+
+For a Claude-only install, use the public skill-repo convention:
+
+```bash
+npx skills@latest add rahul-kulkarni105/skills
+```
+
+The skill installer reads
+[../.claude-plugin/plugin.json](../.claude-plugin/plugin.json), which
+lists the published skill directories. The local CLI remains available
+for the broader multi-tool install path.
+
 ## Project-scoped settings
 
 [../.claude/settings.json](../.claude/settings.json) holds the

@@ -1,0 +1,10 @@
+{
+  "name": "ai-skills-conventions",
+  "skills": [
+    "./skills/convince-me",
+    "./skills/grill-me",
+    "./skills/pre-mortem",
+    "./skills/steelman",
+    "./skills/weak-spots"
+  ]
+}

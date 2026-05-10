@@ -17,6 +17,7 @@ import {
   promptComponentSelect,
   promptPickMode,
   promptTargetSelect,
+  promptTelemetryConsent,
 } from "../prompts.js";
 import { type Manifest, type ShimTemplate } from "../manifest-schema.js";
 import {
@@ -34,6 +35,12 @@ import {
   buildConflictPrompt,
   type JsonObject,
 } from "../settings-merge.js";
+import {
+  decideTelemetry,
+  hasTelemetryEnvOverride,
+  readConfig,
+  updateTelemetryConsent,
+} from "../config.js";
 
 // ─── Options ──────────────────────────────────────────────────────────────────
 
@@ -110,6 +117,14 @@ export interface InitOptions {
    * clobbering previously-installed entries.
    */
   preserveExistingEntries?: boolean;
+  /**
+   * Test/config injection for the future telemetry consent prompt.
+   * The prompt records a local preference only; no analytics events are sent.
+   */
+  telemetryConfigPath?: string;
+  telemetryEnv?: NodeJS.ProcessEnv;
+  isTTY?: boolean;
+  onTelemetryConsent?: () => Promise<boolean>;
 }
 
 // ─── Command ──────────────────────────────────────────────────────────────────
@@ -140,6 +155,8 @@ export async function runInit(options: InitOptions): Promise<void> {
   let verifiedAt: string | null = null;
 
   try {
+    await maybePromptForTelemetryConsent(options);
+
     // ── 1. Resolve source ────────────────────────────────────────────────────
     if (options.manifestPath) {
       // Local path (Session 2 mode, tests, --manifest flag).
@@ -473,6 +490,26 @@ export async function runInit(options: InitOptions): Promise<void> {
       await rm(extractDir, { recursive: true, force: true }).catch(() => undefined);
     }
   }
+}
+
+async function maybePromptForTelemetryConsent(options: InitOptions): Promise<void> {
+  const env = options.telemetryEnv ?? process.env;
+  if (options.yes || hasTelemetryEnvOverride(env)) return;
+  if (env["CI"]) return;
+
+  const isTTY = options.isTTY ?? Boolean(process.stdin.isTTY && process.stdout.isTTY);
+  if (!isTTY) return;
+
+  const config = await readConfig(options.telemetryConfigPath).catch(() => null);
+  if (config?.telemetry?.consent) return;
+
+  const decision = decideTelemetry({ config, env, isTTY });
+  if (decision.reason !== "unset") return;
+
+  const accepted = options.onTelemetryConsent
+    ? await options.onTelemetryConsent()
+    : await promptTelemetryConsent();
+  await updateTelemetryConsent(accepted ? "enabled" : "disabled", options.telemetryConfigPath);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

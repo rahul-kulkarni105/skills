@@ -116,3 +116,10 @@ export async function promptAdoptOrOverwrite(dest: string): Promise<ExistingFile
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {
   return confirm({ message, default: defaultValue });
 }
+
+export async function promptTelemetryConsent(): Promise<boolean> {
+  return confirm({
+    message: "Send anonymous usage analytics to help improve ai-skills?",
+    default: false,
+  });
+}

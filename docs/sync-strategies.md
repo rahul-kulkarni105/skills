@@ -6,16 +6,30 @@ last_reviewed: 2026-05-09
 
 # Sync strategies
 
-Two supported ways to bring this repo into a consumer project.
-Pick by how tightly the team needs to track upstream.
+Three supported ways to bring this repo into a consumer project.
+Pick by how much of the repo the consumer needs.
 
 ## TL;DR
 
 | Use case | Strategy |
 |---|---|
+| Just want the Claude skills | **Claude skill install** |
 | Single-developer / casual / want defaults and forget | **Bootstrap** |
 | Team project / want pinned, reviewable upgrades | **Submodule** |
 | Just want to read it on GitHub | Neither — read in place |
+
+## Claude skill install
+
+Use the public skill-repo convention when you only want the Claude Code
+skills:
+
+```bash
+npx skills@latest add rahul-kulkarni105/skills
+```
+
+This reads [../.claude-plugin/plugin.json](../.claude-plugin/plugin.json)
+and installs the skill directories listed there. It is intentionally
+narrow: no CLI package, no cross-tool shims, no repo bootstrap.
 
 ## Submodule
 
