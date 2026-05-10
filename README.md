@@ -6,6 +6,10 @@ last_reviewed: 2026-05-08
 
 # AI Skills & Conventions — multi-tool AI assistant configuration
 
+[![npm](https://img.shields.io/npm/v/%40rahulkulkarniskills%2Fai-skills)](https://www.npmjs.com/package/@rahulkulkarniskills/ai-skills)
+[![npm downloads](https://img.shields.io/npm/dm/%40rahulkulkarniskills%2Fai-skills)](https://www.npmjs.com/package/@rahulkulkarniskills/ai-skills)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](cli/LICENSE)
+
 A code-free, document-only knowledge base of skills, prompts, and instructions
 for AI coding assistants — **Claude Code**, **GitHub Copilot**, **OpenAI Codex**,
 **Gemini CLI**, **Cursor**, **Windsurf**, and **Ollama**. Built around the
