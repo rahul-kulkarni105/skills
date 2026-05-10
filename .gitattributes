@@ -1,0 +1,14 @@
+# Canonical line endings for all installable content. The CLI's
+# canonical sha256 normalizes CRLF→LF before hashing, so source files
+# must be stored as LF in git to keep `verify` deterministic across
+# Windows checkouts (where core.autocrlf=true would otherwise rewrite
+# line endings on checkout and produce false drift).
+*.md       text eol=lf
+*.json     text eol=lf
+*.mdc      text eol=lf
+*.ts       text eol=lf
+*.js       text eol=lf
+*.sh       text eol=lf
+
+# Exclude from `git archive` tarballs (bootstrap fallback, release tarballs).
+IMPLEMENTATION_PLAN.md export-ignore

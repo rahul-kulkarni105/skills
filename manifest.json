@@ -1,0 +1,385 @@
+{
+  "manifestVersion": 1,
+  "release": {
+    "tag": "dev",
+    "commit": "51efcc58060a991addd7a0dad8877a6f0284601c",
+    "builtAt": "1970-01-01T00:00:00Z"
+  },
+  "targets": [
+    {
+      "id": "claude",
+      "label": "Claude Code",
+      "installRoot": ".",
+      "projectScoped": true
+    },
+    {
+      "id": "codex",
+      "label": "OpenAI Codex",
+      "installRoot": ".",
+      "projectScoped": true
+    },
+    {
+      "id": "copilot",
+      "label": "GitHub Copilot",
+      "installRoot": ".",
+      "projectScoped": true
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "installRoot": ".",
+      "projectScoped": true
+    },
+    {
+      "id": "gemini",
+      "label": "Gemini CLI",
+      "installRoot": ".",
+      "projectScoped": true
+    }
+  ],
+  "shimTemplates": [
+    {
+      "id": "copilot-import-shim",
+      "sha256": "09ee05732e6d81090f5d00970d2f1574b4a2e2a10beb993f723842edea709a63",
+      "managedByHeader": "<!-- managed-by: ai-skills -->"
+    },
+    {
+      "id": "cursor-file-shim",
+      "sha256": "c00c23d11e797f2ddadbf02f5882151fbdd6a4b80d7a5d97e89b59b11de8aaa2",
+      "managedByHeader": "# managed-by: ai-skills"
+    }
+  ],
+  "bundles": [
+    {
+      "id": "adversarial-pack",
+      "label": "Adversarial review pack",
+      "description": "Skills for grilling plans, surfacing weak spots, steelmanning.",
+      "components": [
+        "skill.convince-me",
+        "skill.grill-me",
+        "skill.pre-mortem",
+        "skill.steelman",
+        "skill.weak-spots"
+      ]
+    },
+    {
+      "id": "rules-core",
+      "label": "Core rules",
+      "description": "Cross-tool agent rules (AGENTS.md, CLAUDE.md, GEMINI.md).",
+      "components": [
+        "rule.agents",
+        "rule.claude",
+        "rule.gemini"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "instruction.adversarial-default",
+      "type": "instruction",
+      "source": "instructions/adversarial-default.md",
+      "sha256": "e2bd4f89070888bd5c16bacb65ae3ad423397946acbbd538a661c06524a2523e",
+      "installs": {
+        "claude": {
+          "dest": "instructions/adversarial-default.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.code-quality-bar",
+      "type": "instruction",
+      "source": "instructions/code-quality-bar.md",
+      "sha256": "ef090bff75f199214fb435d596145c05a21709e686f28c2e3a7b9c270332a49a",
+      "installs": {
+        "claude": {
+          "dest": "instructions/code-quality-bar.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.commit-conventions",
+      "type": "instruction",
+      "source": "instructions/commit-conventions.md",
+      "sha256": "c5dc2fc86d30b7deb74360a243e8844199fc573cf4d3bf28812f3fe0ba91219b",
+      "installs": {
+        "claude": {
+          "dest": "instructions/commit-conventions.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context-and-token-discipline",
+      "type": "instruction",
+      "source": "instructions/context-and-token-discipline.md",
+      "sha256": "2a0e057778b0ece50c0ee047a927478d1b5f07d78b7d77cedb20bf50749e11bc",
+      "installs": {
+        "claude": {
+          "dest": "instructions/context-and-token-discipline.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context.claude",
+      "type": "instruction",
+      "source": "instructions/context/claude.md",
+      "sha256": "f863e8343fe9323f80faed9f4d126fae40ec6f384be992b2698d04645dfabe8b",
+      "installs": {
+        "claude": {
+          "dest": "instructions/context/claude.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context.codex",
+      "type": "instruction",
+      "source": "instructions/context/codex.md",
+      "sha256": "08a3a1b8b9792f41c5921cbeb76af81cb4c49c5d8a4b17facc7a717bab3e271c",
+      "installs": {
+        "codex": {
+          "dest": "instructions/context/codex.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context.copilot",
+      "type": "instruction",
+      "source": "instructions/context/copilot.md",
+      "sha256": "445e7766fef6526273ac8263b1ca7e6ae295d99868abc655518c0ed0dea7dff0",
+      "installs": {
+        "copilot": {
+          "dest": "instructions/context/copilot.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context.cursor",
+      "type": "instruction",
+      "source": "instructions/context/cursor.md",
+      "sha256": "4c18f4f775cbfbddb906619d0f42ac355afa45994cf1b48e1f56e60ff2d8574e",
+      "installs": {
+        "cursor": {
+          "dest": "instructions/context/cursor.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.context.gemini",
+      "type": "instruction",
+      "source": "instructions/context/gemini.md",
+      "sha256": "b2ae4d928cec64a9f6f35acb85030fd7a1c2cc3e3c12d16a97a9c386c992f366",
+      "installs": {
+        "gemini": {
+          "dest": "instructions/context/gemini.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.interaction-style",
+      "type": "instruction",
+      "source": "instructions/interaction-style.md",
+      "sha256": "a4b5128c8df54938c466a69ec82f14899a552c26ec78e0f076a86b2979648453",
+      "installs": {
+        "claude": {
+          "dest": "instructions/interaction-style.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.pr-conventions",
+      "type": "instruction",
+      "source": "instructions/pr-conventions.md",
+      "sha256": "91398fbb2850c6e1327efb3955c8fde6106d295922f628ca1c1909cfd27abf51",
+      "installs": {
+        "claude": {
+          "dest": "instructions/pr-conventions.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.secrets-and-safety",
+      "type": "instruction",
+      "source": "instructions/secrets-and-safety.md",
+      "sha256": "7c0d6c2f25642af75bf8a3f00c60e8b4a8cdb691e1d2ac1c7d6f228274ecba56",
+      "installs": {
+        "claude": {
+          "dest": "instructions/secrets-and-safety.md"
+        }
+      }
+    },
+    {
+      "id": "instruction.tone-and-style",
+      "type": "instruction",
+      "source": "instructions/tone-and-style.md",
+      "sha256": "b7002018ee4cdb9fbca1e0caae593834b9a321c8a2ec77b87e7dc1f5891b6811",
+      "installs": {
+        "claude": {
+          "dest": "instructions/tone-and-style.md"
+        }
+      }
+    },
+    {
+      "id": "rule.agents",
+      "type": "rule",
+      "source": "AGENTS.md",
+      "sha256": "7bf1fb0a9264d7d392dd63f75a18a3895599865d14bfe8250221170ccbbd1e48",
+      "installs": {
+        "claude": {
+          "dest": "AGENTS.md"
+        },
+        "codex": {
+          "dest": "AGENTS.md"
+        },
+        "copilot": {
+          "dest": ".github/copilot-instructions.md",
+          "shim": "copilot-import-shim"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/000-agents.mdc",
+          "shim": "cursor-file-shim"
+        },
+        "gemini": {
+          "dest": "AGENTS.md"
+        }
+      },
+      "description": "Universal cross-tool rules.",
+      "bundles": [
+        "rules-core"
+      ]
+    },
+    {
+      "id": "rule.claude",
+      "type": "rule",
+      "source": "CLAUDE.md",
+      "sha256": "22efe938250ee47b8ca118fa47e8a1169851766994ebbf5691a4bfdc119c5817",
+      "installs": {
+        "claude": {
+          "dest": "CLAUDE.md"
+        }
+      },
+      "dependsOn": [
+        "rule.agents"
+      ],
+      "description": "Claude Code project memory. Depends on rule.agents.",
+      "bundles": [
+        "rules-core"
+      ]
+    },
+    {
+      "id": "rule.gemini",
+      "type": "rule",
+      "source": "GEMINI.md",
+      "sha256": "130ae5375dd4eba4b7efe1ef639b8a9945da5ec63a2111699eaab06f108b02c9",
+      "installs": {
+        "gemini": {
+          "dest": "GEMINI.md"
+        }
+      },
+      "description": "Gemini CLI project memory.",
+      "bundles": [
+        "rules-core"
+      ]
+    },
+    {
+      "id": "settings.claude",
+      "type": "settings",
+      "source": ".claude/settings.json",
+      "sha256": "85d489dbb824253057ef68ecda75b31a215ba74d7bcf7ed3cd4787a6e423631c",
+      "installs": {
+        "claude": {
+          "dest": ".claude/settings.json"
+        }
+      },
+      "mergeStrategy": "deep-merge"
+    },
+    {
+      "id": "skill.convince-me",
+      "type": "skill",
+      "source": "skills/convince-me/SKILL.md",
+      "sha256": "a03b00392cf9395bd158c4494f00bfbad7e574d589d7783383cc0a69c67ad7e0",
+      "installs": {
+        "claude": {
+          "dest": ".claude/skills/convince-me/SKILL.md"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/100-skill-convince-me.mdc",
+          "shim": "cursor-file-shim"
+        }
+      },
+      "bundles": [
+        "adversarial-pack"
+      ]
+    },
+    {
+      "id": "skill.grill-me",
+      "type": "skill",
+      "source": "skills/grill-me/SKILL.md",
+      "sha256": "b6e6460c0364e2f75666c8e0217e97e2740e3eb426d4ad6e9f540e577fb16d3a",
+      "installs": {
+        "claude": {
+          "dest": ".claude/skills/grill-me/SKILL.md"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/100-skill-grill-me.mdc",
+          "shim": "cursor-file-shim"
+        }
+      },
+      "bundles": [
+        "adversarial-pack"
+      ]
+    },
+    {
+      "id": "skill.pre-mortem",
+      "type": "skill",
+      "source": "skills/pre-mortem/SKILL.md",
+      "sha256": "5f17e475491c5169db49f48469359fbb1f1ecf37d77cd2a7f3e94fc1e3b7df5c",
+      "installs": {
+        "claude": {
+          "dest": ".claude/skills/pre-mortem/SKILL.md"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/100-skill-pre-mortem.mdc",
+          "shim": "cursor-file-shim"
+        }
+      },
+      "bundles": [
+        "adversarial-pack"
+      ]
+    },
+    {
+      "id": "skill.steelman",
+      "type": "skill",
+      "source": "skills/steelman/SKILL.md",
+      "sha256": "b5218be24a4676c8b8a942b2ba30d7bf545e81d7a005fd1b320a2f09a7c209b3",
+      "installs": {
+        "claude": {
+          "dest": ".claude/skills/steelman/SKILL.md"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/100-skill-steelman.mdc",
+          "shim": "cursor-file-shim"
+        }
+      },
+      "bundles": [
+        "adversarial-pack"
+      ]
+    },
+    {
+      "id": "skill.weak-spots",
+      "type": "skill",
+      "source": "skills/weak-spots/SKILL.md",
+      "sha256": "ccd7b4c0b08f8588b60316bb7d019cc99a71833b8281d814e98b5fe7a1f943b0",
+      "installs": {
+        "claude": {
+          "dest": ".claude/skills/weak-spots/SKILL.md"
+        },
+        "cursor": {
+          "dest": ".cursor/rules/100-skill-weak-spots.mdc",
+          "shim": "cursor-file-shim"
+        }
+      },
+      "bundles": [
+        "adversarial-pack"
+      ]
+    }
+  ]
+}

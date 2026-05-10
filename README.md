@@ -74,4 +74,11 @@ See [docs/working-with-ai.md](docs/working-with-ai.md).
 
 ## License
 
-[CC BY 4.0](LICENSE).
+Dual-licensed by component type:
+
+- **Content** (markdown skills, rules, instructions, prompts, stacks,
+  docs — everything outside `cli/`): [CC BY 4.0](LICENSE). Creative
+  Commons explicitly recommends against CC licenses for software, so
+  the CLI is licensed separately.
+- **CLI code** (`cli/` — the TypeScript installer published as
+  `@rahulkulkarniskills/ai-skills`): [MIT](cli/LICENSE).
