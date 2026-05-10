@@ -170,11 +170,46 @@ describe("event capture helpers", () => {
       client,
     });
 
-    failCommand(context, "init", Date.now(), new Error("manifest invalid at $.release"));
+    failCommand(context, "init", Date.now(), new Error("manifest invalid at $.release"), {}, {
+      exceptionSampleRate: 0,
+    });
 
     expect(client.captures[0]?.event).toBe("command_failed");
     expect(client.captures[0]?.properties?.["error_kind"]).toBe("manifest_validation_error");
     expect(JSON.stringify(client.captures)).not.toContain("manifest invalid");
+  });
+
+  it("captures sampled exception events without raw messages or stacks", async () => {
+    const configPath = join(tempDir, "config.json");
+    await updateTelemetryConsent("enabled", configPath);
+    const client = makeClient();
+    const context = await createTelemetryContext({
+      configPath,
+      env: { AI_SKILLS_POSTHOG_KEY: "phc_test" },
+      isTTY: true,
+      client,
+    });
+
+    failCommand(
+      context,
+      "verify",
+      Date.now(),
+      new Error("EACCES permission denied at /Users/alice/project token=secret"),
+      { installRoot: "/Users/alice/project" },
+      { exceptionSampleRate: 1, random: () => 0 },
+    );
+
+    expect(client.captures.map((c) => c.event)).toEqual([
+      "command_failed",
+      "command_exception_sampled",
+    ]);
+    expect(client.captures[1]?.properties).toMatchObject({
+      command: "verify",
+      error_kind: "filesystem_permission_error",
+    });
+    expect(JSON.stringify(client.captures)).not.toContain("EACCES permission denied");
+    expect(JSON.stringify(client.captures)).not.toContain("/Users/alice");
+    expect(JSON.stringify(client.captures)).not.toContain("secret");
   });
 
   it("swallows capture and shutdown failures", async () => {
@@ -208,6 +243,12 @@ describe("classifyError()", () => {
     );
     expect(classifyError(new Error("EACCES permission denied"))).toBe(
       "filesystem_permission_error",
+    );
+  });
+
+  it("redacts before classifying unknown errors", () => {
+    expect(classifyError(new Error("unexpected token=secret at /Users/alice/project"))).toBe(
+      "unknown_error",
     );
   });
 });

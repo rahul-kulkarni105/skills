@@ -1,20 +1,37 @@
 import { PostHog } from "posthog-node";
 import { decideTelemetry, isTruthyEnv, readConfig } from "./config.js";
+import { redact } from "./log.js";
 import { CLI_VERSION } from "./version.js";
 
-export type TelemetryEvent =
-  | "command_started"
-  | "command_completed"
-  | "command_failed"
-  | "doctor_check_completed"
-  | "install_plan_built"
-  | "install_completed"
-  | "verify_completed"
-  | "list_completed"
-  | "add_completed"
-  | "remove_completed"
-  | "eject_completed"
-  | "telemetry_consent_changed";
+export const TELEMETRY_EVENTS = [
+  "command_started",
+  "command_completed",
+  "command_failed",
+  "command_exception_sampled",
+  "doctor_check_completed",
+  "install_plan_built",
+  "install_completed",
+  "verify_completed",
+  "list_completed",
+  "add_completed",
+  "remove_completed",
+  "eject_completed",
+  "telemetry_consent_changed",
+] as const;
+
+export type TelemetryEvent = (typeof TELEMETRY_EVENTS)[number];
+
+export const TELEMETRY_ERROR_KINDS = [
+  "manifest_validation_error",
+  "lockfile_error",
+  "network_fetch_error",
+  "integrity_error",
+  "settings_merge_error",
+  "filesystem_permission_error",
+  "unknown_error",
+] as const;
+
+export type TelemetryErrorKind = (typeof TELEMETRY_ERROR_KINDS)[number];
 
 export interface TelemetryClient {
   capture(message: {
@@ -41,10 +58,15 @@ export interface TelemetryOptions {
   client?: TelemetryClient;
 }
 
+export interface FailCommandOptions {
+  exceptionSampleRate?: number;
+  random?: () => number;
+}
+
 export type TelemetryProperties = Record<string, unknown>;
 
 const DEFAULT_POSTHOG_HOST = "https://us.i.posthog.com";
-const ALLOWED_PROPS = new Set([
+export const TELEMETRY_ALLOWED_PROPERTIES = [
   "cli_version",
   "node_major",
   "platform",
@@ -72,7 +94,9 @@ const ALLOWED_PROPS = new Set([
   "cascade",
   "has_manifest",
   "telemetry_reason",
-]);
+] as const;
+
+const ALLOWED_PROPS = new Set<string>(TELEMETRY_ALLOWED_PROPERTIES);
 
 export async function createTelemetryContext(options: TelemetryOptions = {}): Promise<TelemetryContext> {
   const env = options.env ?? process.env;
@@ -158,13 +182,22 @@ export function failCommand(
   startedAt: number,
   error: unknown,
   properties: TelemetryProperties = {},
+  options: FailCommandOptions = {},
 ): void {
+  const errorKind = classifyError(error);
+  const durationMs = Date.now() - startedAt;
   captureTelemetry(context, "command_failed", {
     command,
-    duration_ms: Date.now() - startedAt,
-    error_kind: classifyError(error),
+    duration_ms: durationMs,
+    error_kind: errorKind,
     ...properties,
   });
+  captureSampledException(context, {
+    command,
+    duration_ms: durationMs,
+    error_kind: errorKind,
+    ...properties,
+  }, options);
 }
 
 export async function flushTelemetry(context: TelemetryContext, timeoutMs = 300): Promise<void> {
@@ -186,8 +219,8 @@ export function sanitizeProperties(properties: TelemetryProperties): TelemetryPr
   return sanitized;
 }
 
-export function classifyError(error: unknown): string {
-  const message = error instanceof Error ? error.message : String(error);
+export function classifyError(error: unknown): TelemetryErrorKind {
+  const message = redact(error instanceof Error ? error.message : String(error));
   if (message.includes("manifest invalid")) return "manifest_validation_error";
   if (message.toLowerCase().includes("lockfile")) return "lockfile_error";
   if (message.includes("HTTP ") || message.includes("fetch") || message.includes("network")) {
@@ -199,6 +232,24 @@ export function classifyError(error: unknown): string {
     return "filesystem_permission_error";
   }
   return "unknown_error";
+}
+
+function captureSampledException(
+  context: TelemetryContext,
+  properties: TelemetryProperties,
+  options: FailCommandOptions,
+): void {
+  const sampleRate = clampSampleRate(options.exceptionSampleRate ?? 0.1);
+  const random = options.random ?? Math.random;
+  if (sampleRate <= 0 || random() >= sampleRate) return;
+  captureTelemetry(context, "command_exception_sampled", properties);
+}
+
+function clampSampleRate(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 1) return 1;
+  return value;
 }
 
 function newPostHogClient(apiKey: string): TelemetryClient {

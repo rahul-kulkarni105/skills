@@ -95,6 +95,13 @@ Walk the directory tree, confirm every README renders cleanly, no
 broken cross-links, and `tool-matrix.md` matches each tool's
 current docs.
 
+## Release Checklist
+
+- Run the CLI typecheck and test suite.
+- Run `npm pack --dry-run` from `cli/` before publishing.
+- Verify [telemetry.md](telemetry.md) and the README privacy section match
+  the event names and property allowlist in `cli/src/telemetry.ts`.
+
 ## See also
 
 - [architecture.md](architecture.md)

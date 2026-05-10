@@ -77,6 +77,17 @@ ai-skills telemetry disable
 Telemetry consent is stored in your user config directory, not in the
 project. `DO_NOT_TRACK=1` and `AI_SKILLS_TELEMETRY=0` are respected.
 
+## Privacy
+
+Anonymous telemetry is opt-in. Interactive `init` asks once; `--yes`,
+CI, and non-TTY runs stay disabled unless `AI_SKILLS_TELEMETRY=1` is
+set. Telemetry is sent only when a PostHog project key is configured.
+
+Telemetry never sends secrets, absolute paths, file contents, registry
+URLs, Git remotes, raw command arguments, user names, host names, raw
+error messages, or stack traces. See [docs/telemetry.md](docs/telemetry.md)
+for the full schema and controls.
+
 ## What Is Included
 
 - [skills/](skills/) — Claude Code skills:
