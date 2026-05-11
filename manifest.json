@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "release": {
     "tag": "dev",
-    "commit": "51efcc58060a991addd7a0dad8877a6f0284601c",
+    "commit": "a59051fde3642c1e616e8ce6089ea7933d398c99",
     "builtAt": "1970-01-01T00:00:00Z"
   },
   "targets": [
@@ -82,6 +82,9 @@
       "installs": {
         "claude": {
           "dest": "instructions/adversarial-default.md"
+        },
+        "codex": {
+          "dest": "instructions/adversarial-default.md"
         }
       }
     },
@@ -92,6 +95,9 @@
       "sha256": "ef090bff75f199214fb435d596145c05a21709e686f28c2e3a7b9c270332a49a",
       "installs": {
         "claude": {
+          "dest": "instructions/code-quality-bar.md"
+        },
+        "codex": {
           "dest": "instructions/code-quality-bar.md"
         }
       }
@@ -104,6 +110,9 @@
       "installs": {
         "claude": {
           "dest": "instructions/commit-conventions.md"
+        },
+        "codex": {
+          "dest": "instructions/commit-conventions.md"
         }
       }
     },
@@ -114,6 +123,9 @@
       "sha256": "2a0e057778b0ece50c0ee047a927478d1b5f07d78b7d77cedb20bf50749e11bc",
       "installs": {
         "claude": {
+          "dest": "instructions/context-and-token-discipline.md"
+        },
+        "codex": {
           "dest": "instructions/context-and-token-discipline.md"
         }
       }
@@ -133,7 +145,7 @@
       "id": "instruction.context.codex",
       "type": "instruction",
       "source": "instructions/context/codex.md",
-      "sha256": "08a3a1b8b9792f41c5921cbeb76af81cb4c49c5d8a4b17facc7a717bab3e271c",
+      "sha256": "1c3834ca086db8cb1cee43f5fc41cd33016b7718ab90ac5a6a2b9a0f6da68286",
       "installs": {
         "codex": {
           "dest": "instructions/context/codex.md"
@@ -181,6 +193,9 @@
       "installs": {
         "claude": {
           "dest": "instructions/interaction-style.md"
+        },
+        "codex": {
+          "dest": "instructions/interaction-style.md"
         }
       }
     },
@@ -191,6 +206,9 @@
       "sha256": "91398fbb2850c6e1327efb3955c8fde6106d295922f628ca1c1909cfd27abf51",
       "installs": {
         "claude": {
+          "dest": "instructions/pr-conventions.md"
+        },
+        "codex": {
           "dest": "instructions/pr-conventions.md"
         }
       }
@@ -203,6 +221,9 @@
       "installs": {
         "claude": {
           "dest": "instructions/secrets-and-safety.md"
+        },
+        "codex": {
+          "dest": "instructions/secrets-and-safety.md"
         }
       }
     },
@@ -213,6 +234,9 @@
       "sha256": "b7002018ee4cdb9fbca1e0caae593834b9a321c8a2ec77b87e7dc1f5891b6811",
       "installs": {
         "claude": {
+          "dest": "instructions/tone-and-style.md"
+        },
+        "codex": {
           "dest": "instructions/tone-and-style.md"
         }
       }

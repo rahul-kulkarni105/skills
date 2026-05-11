@@ -6,9 +6,10 @@ last_reviewed: 2026-05-09
 
 # Architecture
 
-This repo is a **document-only** knowledge base for AI assistants. No
-code, no build step, no package manifest. Every file is read by an
-LLM at conversation start or on demand.
+This repo is a reusable knowledge base for AI assistants plus a small
+TypeScript installer. The model-facing content lives in markdown files;
+the CLI in [../cli/](../cli/) installs selected rules, instructions,
+skills, and settings into consumer projects from [../manifest.json](../manifest.json).
 
 ## The single source of truth
 
@@ -105,8 +106,6 @@ automation).
 
 ## What is deliberately NOT here
 
-- No `package.json`, no Node setup, no lint/test config.
-- No build step generating tool files from a shared source.
 - No CI workflows.
 - No symlinks (every file is a real file at its tool-native path).
 - No initial stack-file content beyond domain READMEs.

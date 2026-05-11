@@ -1,65 +1,39 @@
 <!--
   GitHub Copilot custom instructions.
 
-  Copilot has no `@import` syntax, so this file mirrors the core of
-  AGENTS.md by hand. When you change rules in AGENTS.md or
-  instructions/context-and-token-discipline.md, mirror them here.
-  See docs/architecture.md for the manual sync rule.
+  AGENTS.md and CLAUDE.md load as always-on instructions on every prompt —
+  all universal rules (adversarial default, token discipline, tone, commits,
+  secrets) live there. This file adds Copilot-specific surface area only.
 
-  last_reviewed: 2026-05-09
+  last_reviewed: 2026-05-10
 -->
 
-# Project conventions for Copilot
+# Copilot — project additions
 
-> **Precedence.** Consumer project config wins. Treat the rules below
-> as defaults.
+> **Precedence.** Consumer project config wins over these defaults.
 
-## Interaction
+## Adversarial skills
 
-- When you need a clarification, surface it as a discrete question (use
-  Copilot Chat's structured option UI when available). Never bury
-  questions in prose.
-- One question per turn unless the user asks for multiple.
+Five skills are available as slash commands in Chat:
 
-## Adversarial default
+- `/grill-me` — aggressively challenge a plan or design
+- `/weak-spots` — structured failure-mode audit across 8 axes
+- `/pre-mortem` — imagine it shipped and failed; explain why
+- `/steelman` — build the strongest case for the rejected option
+- `/convince-me` — Socratic cross-examination of a stated decision
 
-Default stance is sceptical. Before agreeing with a plan, surface its
-weak spots: assumptions that could be wrong, missing constraints,
-failure modes, simpler alternatives. The user values being challenged
-over being agreed with.
+## Code-file rules
 
-## Token & context discipline
+`.github/instructions/code-quality.instructions.md` loads automatically
+when code files are in context (scoped via `applyTo`). Covers scope
+discipline, error handling, comments, tests, types, performance, security.
 
-1. Search before reading: locate symbols/strings before pulling whole
-   files into context.
-2. For files >500 lines, read by ranges; never pull >2000 lines in one
-   shot.
-3. Batch independent tool calls in a single turn.
-4. Don't re-read a file you just edited.
-5. Summarise large outputs; quote only the lines that matter.
-6. Prefer surgical edits over full file rewrites.
-7. Keep instruction files terse; link out for detail.
+## Verify instructions loaded
 
-Per-tool detail: `instructions/context/copilot.md`. VS Code settings
-that support these rules live in `.vscode/settings.json`.
+After any Chat reply, expand **References** to confirm instruction files
+were picked up. If `copilot-instructions.md` is missing, verify that
+`github.copilot.chat.codeGeneration.useInstructionFiles` is `true` in
+settings.
 
-## Tone & style
-
-Short, concise, no preamble. Code-first. No emojis unless asked.
-
-## Commits & PRs
-
-- Commits: Conventional Commits (`type(scope): summary`).
-- PRs: follow the project's template; describe **why**, not just
-  **what**.
-
-## Secrets & safety
-
-- Never commit, log, or paste secrets, tokens, keys, or credentials.
-- Confirm before destructive Git operations.
-
-## More context
-
-This repo also exposes `AGENTS.md`, `CLAUDE.md`, and `instructions/`.
-When working in agent mode, prefer reading those files for the full
-authoritative ruleset.
+> **Note:** Custom instructions apply to Chat only — inline completions
+> do not see them.

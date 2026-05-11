@@ -15,6 +15,10 @@ file up the tree wins.
 [../AGENTS.md](../AGENTS.md) is the entry point. Codex reads it on
 every prompt. Token & context discipline is composed in.
 
+When installed through `ai-skills`, the Codex target also receives the
+top-level files under `instructions/` that AGENTS.md references, plus
+[../instructions/context/codex.md](../instructions/context/codex.md).
+
 ## Hierarchy
 
 | Layer | Path | Use for |
@@ -38,7 +42,8 @@ in unfamiliar repos.
 
 [../instructions/context/codex.md](../instructions/context/codex.md)
 covers the AGENTS.md hierarchy, the ~3k token chain budget, and
-config highlights.
+config highlights. Keep repo-specific Codex workflow notes there rather
+than growing AGENTS.md.
 
 ## Verification
 

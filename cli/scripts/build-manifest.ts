@@ -170,6 +170,7 @@ function buildSeeds(): ComponentSeed[] {
       source,
       installs: {
         claude: { dest: source },
+        codex: { dest: source },
       },
     });
   }

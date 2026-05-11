@@ -454,6 +454,36 @@ describe("--user mode", () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// Codex composition
+// ═══════════════════════════════════════════════════════════════════════════════
+
+describe("codex composition", () => {
+  it("installs AGENTS.md plus the instruction files it references", async () => {
+    const installDir = join(tempDir, "project");
+    mkdirSync(installDir);
+    const manifestPath = join(REPO_ROOT, "manifest.json");
+
+    await runInit({
+      manifestPath,
+      installRoot: installDir,
+      yes: true,
+      targets: ["codex"],
+    });
+
+    expect(existsSync(join(installDir, "AGENTS.md"))).toBe(true);
+    expect(existsSync(join(installDir, "instructions/context-and-token-discipline.md"))).toBe(true);
+    expect(existsSync(join(installDir, "instructions/interaction-style.md"))).toBe(true);
+    expect(existsSync(join(installDir, "instructions/context/codex.md"))).toBe(true);
+
+    const lock = readLockfile(installDir);
+    const codexEntries = lock?.entries.filter((e) => e.target === "codex") ?? [];
+    expect(codexEntries.map((e) => e.id)).toContain("rule.agents");
+    expect(codexEntries.map((e) => e.id)).toContain("instruction.context-and-token-discipline");
+    expect(codexEntries.map((e) => e.id)).toContain("instruction.context.codex");
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // Shim renderer unit tests
 // ═══════════════════════════════════════════════════════════════════════════════
 

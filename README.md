@@ -112,6 +112,16 @@ them there:
 - `skills/`, `instructions/`, `prompts/`, and `stacks/`, because the
   model-facing docs and installer manifests point at those paths.
 
+> **VS Code is the primary target environment** for the config folders
+> listed above. The `.github/` folder is read by the
+> [GitHub Copilot extension](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+> (GitHub/Microsoft); `.claude/` by the
+> [Claude Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code)
+> (Anthropic); `.cursor/` by [Cursor](https://www.cursor.com/)
+> (Anysphere — a VS Code fork, not a VS Code extension). `AGENTS.md`,
+> `CLAUDE.md`, and `GEMINI.md` are additionally read by their
+> respective CLI tools outside VS Code.
+
 ## Other Ways To Consume
 
 - **Bootstrap:** copy a snapshot into a project with

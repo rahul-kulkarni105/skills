@@ -59,6 +59,17 @@ Codex equivalents are global in `~/.codex/config.toml`.
 - For "agent-mode" runs, Codex iterates until the task is done. Cap
   with explicit acceptance criteria in the prompt.
 
+## This repo
+
+- Treat `cli/scripts/build-manifest.ts` as the source for
+  `manifest.json`; rebuild the manifest after changing install
+  composition.
+- For Codex install issues, inspect `AGENTS.md`,
+  `instructions/context/codex.md`, and the `codex` entries in
+  `manifest.json` together.
+- Run focused CLI tests from the repo root with
+  `npm --prefix cli test -- --run <test-file>`.
+
 ## Approval mode
 
 - `manual` for unfamiliar repos.
